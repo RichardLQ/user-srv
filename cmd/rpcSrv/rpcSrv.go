@@ -3,14 +3,36 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/RichardLQ/confs"
+	"github.com/RichardLQ/user-srv/client"
 	"github.com/RichardLQ/user-srv/proto/stub"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 	"log"
+	"net"
 	"net/http"
+	"strings"
 )
+var RpcSrv *grpc.Server
 
 func main() {
+	confs.NewStart().BinComb(&client.Global)
+	go startRpc()
+	startHttp()
+}
+
+
+func startRpc(){
+	//启动rpc服务
+	RpcSrv := grpc.NewServer()
+	stub.RegisterUserServiceServer(RpcSrv, stub.UserService)
+	lis, _ := net.Listen("tcp", ":8081")
+	RpcSrv.Serve(lis)
+}
+func startHttp()  {
+	//启动http服务
 	gwmux := runtime.NewServeMux()
 	opt := []grpc.DialOption{grpc.WithInsecure()}
 	err := stub.RegisterUserServiceHandlerFromEndpoint(context.Background(),
@@ -20,7 +42,41 @@ func main() {
 	}
 	httpServer := &http.Server{
 		Addr:    ":8080",
-		Handler: gwmux,
+		//Handler: gwmux,
+		Handler:grpcHandlerFunc(RpcSrv, gwmux),
 	}
 	httpServer.ListenAndServe()
+}
+
+func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
+	return h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			fmt.Println(r.Header)
+			allowCORS(otherHandler).ServeHTTP(w, r)
+		}
+	}), &http2.Server{})
+}
+
+func allowCORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
+				preflightHandler(w, r)
+				return
+			}
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+func preflightHandler(w http.ResponseWriter, r *http.Request) {
+	headers := []string{"Content-Type", "Accept", "Authorization"}
+	w.Header().Set("Access-Control-Allow-Headers", strings.Join(headers, ","))
+	methods := []string{"GET", "HEAD", "POST", "PUT", "DELETE"}
+	w.Header().Set("Access-Control-Allow-Methods", strings.Join(methods, ","))
+	fmt.Println("preflight request for:", r.URL.Path)
+	return
 }

@@ -26,7 +26,6 @@ func (m *MyClaims) authVerify() error {
 	}
 	var flag = false
 	for _, users := range *list {
-		fmt.Println(users.Password)
 		if users.Password == m.Password {
 			flag = true
 		}
