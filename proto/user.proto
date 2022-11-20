@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option go_package = "./stub";
+import "google/api/annotations.proto";
+package stub;
+
+
+message GetUserInfoReq {
+  int32 user_id = 1;
+};
+
+message GetUserInfoRsp {
+  int32 code = 1;
+  string msg = 2;
+  User user = 3;
+};
+
+message User {
+  int32 id = 1;
+  string openid = 2;
+  string username = 3;
+  string address = 4;
+  string nickname = 5;
+  string desc = 6;
+};
+
+message GetUserTokenReq {
+  string account = 1;
+  string password = 2;
+};
+
+message GetUserTokenRsp {
+  int32 code = 1;
+  string msg = 2;
+  string data = 3;
+};
+message DelUserInfoReq {
+  int32 user_id = 1;
+};
+message DelUserInfoRsp {
+  int32 code = 1;
+  string msg = 2;
+  string data = 3;
+};
+service UserService {
+  rpc GetUserToken (GetUserTokenReq) returns (GetUserTokenRsp){
+    option (google.api.http) = {
+      post: "/user/login",
+      body: "*"
+    };
+  }
+  rpc GetUserInfo (GetUserInfoReq) returns (GetUserInfoRsp){
+    option (google.api.http) = {
+      get: "/user/getInfo/{user_id}"
+    };
+  }
+  rpc DelUserInfo (DelUserInfoReq) returns (DelUserInfoRsp){
+    option (google.api.http) = {
+      delete: "/user/delInfo/{user_id}"
+    };
+  }
+}
+
+
