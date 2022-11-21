@@ -16,33 +16,36 @@ type MyClaims struct {
 	jwt.StandardClaims
 }
 
-func (m *MyClaims) authVerify() error {
+func (m *MyClaims) authVerify() (*user.Users,error) {
 	u := user.Users{
 		UserName: m.UserName,
 	}
 	list ,err := u.FindForName()
 	if err != nil {
-		return err
+		return &u,err
 	}
 	var flag = false
 	for _, users := range *list {
 		if users.Password == m.Password {
+			u = users
 			flag = true
 		}
 	}
 	if !flag {
-		return fmt.Errorf("暂无此账号")
+		return &u,fmt.Errorf("暂无此账号")
 	}
-	return nil
+	return &u,nil
 }
 
 //Encryption 加密信息
-func (m *MyClaims) Encryption() (string, error) {
-	err :=m.authVerify()
+func (m *MyClaims) Encryption() (map[string]interface{}, error) {
+	value := map[string]interface{}{}
+	list,err :=m.authVerify()
 	if err!=nil{
-		return "", err
+		return value, err
 	}
-
+	value["user_id"] = list.Id
+	value["openid"] = list.Openid
 	claims := MyClaims{
 		UserName: m.UserName,
 		Password: m.Password,
@@ -56,10 +59,12 @@ func (m *MyClaims) Encryption() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token_string, err := token.SignedString([]byte(client.Global.UserConf.JwtKey))
 	if err != nil {
-		return "", err
+		return value, err
 	}
-	return token_string, nil
+	value["token"] = token_string
+	return value, nil
 }
+
 
 //Decryption 解密信息
 func (m *MyClaims) Decryption() (interface{}, error) {

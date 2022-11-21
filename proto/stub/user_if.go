@@ -3,6 +3,8 @@ package stub
 import (
 	"context"
 	"github.com/RichardLQ/user-srv/auth"
+	"github.com/RichardLQ/user-srv/model/user"
+	"github.com/RichardLQ/user-srv/refer"
 )
 
 var UserService = &userServiceServer{}
@@ -16,33 +18,52 @@ func (this *userServiceServer) GetUserToken(ctx context.Context, req *GetUserTok
 	rsp := GetUserTokenRsp{
 		Code: 200,
 		Msg: "token请求成功",
-		Data: "",
+		Data: &TokenInfo{},
+	}
+	if req.Account == "" || req.Password == "" {
+		rsp.Msg = "账号错误"
+		rsp.Code = refer.Login_Miss
+		return &rsp,nil
 	}
 	m := &auth.MyClaims{
 		UserName: req.Account,
 		Password: req.Password,
 	}
-	token,err:=m.Encryption()
+	info,err:=m.Encryption()
 	if err != nil {
 		rsp.Code = 201
 		rsp.Msg = err.Error()
 		return &rsp,nil
 	}
-	rsp.Data = token
+	rsp.Data.Token = info["token"].(string)
+	rsp.Data.Openid = info["openid"].(string)
+	rsp.Data.UserId = info["user_id"].(int32)
 	return &rsp,nil
 }
 
 //GetUserInfo 获取用户信息
-func (this *userServiceServer) GetUserInfo(ctx context.Context, req *GetUserInfoReq) (rsp *GetUserInfoRsp, err error) {
-	rsp = &GetUserInfoRsp{
+func (this *userServiceServer) GetUserInfo(ctx context.Context, req *GetUserInfoReq) (*GetUserInfoRsp,error) {
+	rsp := GetUserInfoRsp{
 		Code: 200,
-		User: &User{
-			Id:       req.UserId,
-			Username: "Jerome",
-			Desc:     "这是一条数据",
-		},
 	}
-	return
+	u := user.Users{
+		Id: req.UserId,
+		Openid: req.Openid,
+	}
+	list ,err :=u.FindByIdOrOpenid()
+	if err!= nil {
+		return &rsp,nil
+	}
+	user := &User{
+		Id: list.Id,
+		Openid: list.Openid,
+		Username: list.UserName,
+		Address: list.Address,
+		Nickname: list.NickName,
+		Desc: list.Desc,
+	}
+	rsp.User = user
+	return &rsp,nil
 }
 
 //DelUserInfo 删除用户信息

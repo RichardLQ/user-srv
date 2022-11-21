@@ -7,6 +7,7 @@ package stub;
 
 message GetUserInfoReq {
   int32 user_id = 1;
+  string openid =2;
 };
 
 message GetUserInfoRsp {
@@ -32,8 +33,13 @@ message GetUserTokenReq {
 message GetUserTokenRsp {
   int32 code = 1;
   string msg = 2;
-  string data = 3;
+   TokenInfo data = 3;
 };
+message TokenInfo {
+  string token  = 1;
+  string openid = 2;
+  int32 user_id = 3;
+}
 message DelUserInfoReq {
   int32 user_id = 1;
 };

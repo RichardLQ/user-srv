@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/RichardLQ/confs"
+	"github.com/RichardLQ/user-srv/auth"
 	"github.com/RichardLQ/user-srv/client"
 	"github.com/RichardLQ/user-srv/proto/stub"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -22,7 +23,6 @@ func main() {
 	go startRpc()
 	startHttp()
 }
-
 
 func startRpc(){
 	//启动rpc服务
@@ -53,11 +53,31 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 			grpcServer.ServeHTTP(w, r)
 		} else {
-			fmt.Println(r.Header)
+			if isNotTokenVerify(r.URL.Path){
+				a :=auth.MyClaims{Token: r.Header.Get("token")}
+				_,err:= a.Decryption()
+				if err!= nil {
+					w.Write([]byte(err.Error()))
+					return
+				}
+			}
 			allowCORS(otherHandler).ServeHTTP(w, r)
 		}
 	}), &http2.Server{})
 }
+
+//不需要验证,白名单地址
+func isNotTokenVerify(url string) bool {
+	flag := true
+	list := map[string]bool{
+		"/user/login":false,
+	}
+	if _,ok := list[url];ok {
+		flag = list[url]
+	}
+	return flag
+}
+
 
 func allowCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
