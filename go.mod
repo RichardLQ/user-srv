@@ -18,6 +18,7 @@ require (
 	github.com/garyburd/redigo v1.6.4 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.14.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/sys v0.2.0 // indirect

@@ -48,6 +48,7 @@ message DelUserInfoRsp {
   string msg = 2;
   string data = 3;
 };
+//用户服务
 service UserService {
   rpc GetUserToken (GetUserTokenReq) returns (GetUserTokenRsp){
     option (google.api.http) = {

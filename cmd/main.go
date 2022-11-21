@@ -7,7 +7,7 @@ import (
 	"github.com/RichardLQ/user-srv/auth"
 	"github.com/RichardLQ/user-srv/client"
 	"github.com/RichardLQ/user-srv/proto/stub"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -27,6 +27,7 @@ func main() {
 func startRpc(){
 	//启动rpc服务
 	RpcSrv := grpc.NewServer()
+	stub.RegisterCollectServiceServer(RpcSrv, stub.CollectService)
 	stub.RegisterUserServiceServer(RpcSrv, stub.UserService)
 	lis, _ := net.Listen("tcp", ":8081")
 	RpcSrv.Serve(lis)
