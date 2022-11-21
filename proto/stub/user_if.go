@@ -2,7 +2,6 @@ package stub
 
 import (
 	"context"
-	"fmt"
 	"github.com/RichardLQ/user-srv/auth"
 	"github.com/RichardLQ/user-srv/model/user"
 	"github.com/RichardLQ/user-srv/refer"
