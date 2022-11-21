@@ -5,12 +5,12 @@ type Users struct {
 	Id         int32  `json:"id"`
 	Openid     string `json:"openid"`
 	Gender     int32  `json:"gender"`
-	UserName   string `json:"username"`
+	Username   string `json:"username"`
 	Password   string `json:"password"`
 	Address    string `json:"address"`
-	NickName   string `json:"nickname"`
+	Nickname   string `json:"nickname"`
 	Desc       string `json:"desc"`
-	LogoutTime string `json:"logoutime"`
-	UpdateTime string `json:"updatetime"`
-	CreateTime string `json:"createtime"`
+	Logouttime string `json:"logoutime"`
+	Updatetime string `json:"updatetime"`
+	Createtime string `json:"createtime"`
 }

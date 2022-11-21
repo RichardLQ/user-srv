@@ -9,7 +9,7 @@ import (
 )
 //MyClaims 加密信息
 type MyClaims struct {
-	UserName string `json:"username"`//账号
+	Username string `json:"username"`//账号
 	Password string `json:"password"` //密码
 	Source   string `json:"source"` //来源
 	Token string `json:"token"` //token
@@ -18,7 +18,7 @@ type MyClaims struct {
 
 func (m *MyClaims) authVerify() (*user.Users,error) {
 	u := user.Users{
-		UserName: m.UserName,
+		Username: m.Username,
 	}
 	list ,err := u.FindForName()
 	if err != nil {
@@ -47,7 +47,7 @@ func (m *MyClaims) Encryption() (map[string]interface{}, error) {
 	value["user_id"] = list.Id
 	value["openid"] = list.Openid
 	claims := MyClaims{
-		UserName: m.UserName,
+		Username: m.Username,
 		Password: m.Password,
 		Source: m.Source,
 		StandardClaims: jwt.StandardClaims{

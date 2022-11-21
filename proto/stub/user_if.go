@@ -2,6 +2,7 @@ package stub
 
 import (
 	"context"
+	"fmt"
 	"github.com/RichardLQ/user-srv/auth"
 	"github.com/RichardLQ/user-srv/model/user"
 	"github.com/RichardLQ/user-srv/refer"
@@ -26,7 +27,7 @@ func (this *userServiceServer) GetUserToken(ctx context.Context, req *GetUserTok
 		return &rsp,nil
 	}
 	m := &auth.MyClaims{
-		UserName: req.Account,
+		Username: req.Account,
 		Password: req.Password,
 	}
 	info,err:=m.Encryption()
@@ -57,9 +58,9 @@ func (this *userServiceServer) GetUserInfo(ctx context.Context, req *GetUserInfo
 	user := &User{
 		Id: list.Id,
 		Openid: list.Openid,
-		Username: list.UserName,
+		Username: list.Username,
 		Address: list.Address,
-		Nickname: list.NickName,
+		Nickname: list.Nickname,
 		Desc: list.Desc,
 	}
 	rsp.User = user
