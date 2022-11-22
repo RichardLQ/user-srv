@@ -5,16 +5,28 @@ package stub;
 message GetCollectListReq{
   int32 user_id = 1;
   string openid = 2;
+  int32 collects = 3;
 }
 
 message GetCollectListRsp{
   int32 code = 1;
   string msg = 2;
-  CollectList list = 3;
+  repeated CollectList list = 3;
+}
+
+message UpdateCollectReq {
+  int32 id = 1;
+  int32 collects = 2;
+}
+
+message UpdateCollectRsp{
+  int32 code = 1;
+  string msg = 2;
 }
 
 message CollectList {
   int32 id = 1;
   string openid = 2;
   string address = 3;
+  int32 collects = 4;
 }

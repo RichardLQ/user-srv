@@ -31,7 +31,7 @@ func (this *userServiceServer) GetUserToken(ctx context.Context, req *GetUserTok
 	}
 	info,err:=m.Encryption()
 	if err != nil {
-		rsp.Code = 201
+		rsp.Code = refer.Token_err
 		rsp.Msg = err.Error()
 		return &rsp,nil
 	}
@@ -52,6 +52,8 @@ func (this *userServiceServer) GetUserInfo(ctx context.Context, req *GetUserInfo
 	}
 	list ,err :=u.FindByIdOrOpenid()
 	if err!= nil {
+		rsp.Code = refer.Find_User_Err
+		rsp.Msg = err.Error()
 		return &rsp,nil
 	}
 	user := &User{

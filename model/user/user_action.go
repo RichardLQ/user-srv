@@ -21,7 +21,7 @@ func (u *Users) FindForName() (*[]Users ,error) {
 //FindByIdOrOpenid 根据user_id或者openid查询
 func (u *Users) FindByIdOrOpenid() (*Users ,error) {
 	if u.Id == 0 && u.Openid == ""{
-		return &Users{},fmt.Errorf("查询为空")
+		return &Users{},fmt.Errorf("查询地址不可以为空")
 	}
 	list := &Users{}
 	sql := client.Global.Mini.Table(refer.Table_Users)
