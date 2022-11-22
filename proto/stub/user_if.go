@@ -67,11 +67,21 @@ func (this *userServiceServer) GetUserInfo(ctx context.Context, req *GetUserInfo
 }
 
 //DelUserInfo 删除用户信息
-func (this *userServiceServer) DelUserInfo(ctx context.Context, req *DelUserInfoReq) (rsp *DelUserInfoRsp, err error) {
-	rsp = &DelUserInfoRsp{
+func (this *userServiceServer) DelUserInfo(ctx context.Context, req *DelUserInfoReq) (*DelUserInfoRsp, error) {
+	rsp := DelUserInfoRsp{
 		Code: 200,
-		Msg:  "删除成功！",
-		Data: "一大堆杂数据",
+		Msg:  "请求失败！",
+		Data: "",
 	}
-	return
+	user := &user.Users{
+		Id: req.UserId,
+	}
+	err := user.DelUserById()
+	if err != nil {
+		rsp.Msg = err.Error()
+		rsp.Code = refer.Del_User_Err
+		return &rsp,err
+	}
+	rsp.Msg = "请求成功！"
+	return &rsp,err
 }

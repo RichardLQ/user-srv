@@ -6,7 +6,7 @@ import (
 
 var Global = struct {
 	UserConf CostVar `confs:"read=rainbow;format=json"`
-	Work     gorm.DB      `confs:"name=Work;read=rainbow"`
+	Mini     gorm.DB      `confs:"name=Mini;read=rainbow"`
 }{}
 
 //CostVar 定义变量

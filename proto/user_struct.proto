@@ -1,9 +1,6 @@
 syntax = "proto3";
-
 option go_package = "./stub";
-import "google/api/annotations.proto";
 package stub;
-
 
 message GetUserInfoReq {
   int32 user_id = 1;
@@ -48,24 +45,6 @@ message DelUserInfoRsp {
   string msg = 2;
   string data = 3;
 };
-//用户服务
-service UserService {
-  rpc GetUserToken (GetUserTokenReq) returns (GetUserTokenRsp){
-    option (google.api.http) = {
-      post: "/user/login",
-      body: "*"
-    };
-  }
-  rpc GetUserInfo (GetUserInfoReq) returns (GetUserInfoRsp){
-    option (google.api.http) = {
-      get: "/user/getInfo/{user_id}"
-    };
-  }
-  rpc DelUserInfo (DelUserInfoReq) returns (DelUserInfoRsp){
-    option (google.api.http) = {
-      delete: "/user/delInfo/{user_id}"
-    };
-  }
-}
+
 
 

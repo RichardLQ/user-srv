@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option go_package = "./stub";
+import "google/api/annotations.proto";
+import "user_struct.proto";
+import "collect_struct.proto";
+package stub;
+
+
+
+
+service UserService {
+  //用户服务
+  rpc GetUserToken (GetUserTokenReq) returns (GetUserTokenRsp){
+    option (google.api.http) = {
+      post: "/user/login",
+      body: "*"
+    };
+  }
+  rpc GetUserInfo (GetUserInfoReq) returns (GetUserInfoRsp){
+    option (google.api.http) = {
+      get: "/user/getInfo/{user_id}"
+    };
+  }
+  rpc DelUserInfo (DelUserInfoReq) returns (DelUserInfoRsp){
+    option (google.api.http) = {
+      delete: "/user/delInfo/{user_id}"
+    };
+  }
+  //收藏服务
+  rpc GetCollectList (GetCollectListReq) returns (GetCollectListRsp){
+    option (google.api.http) = { //获取用户所有的列表信息
+      post: "/collect/list",
+      body: "*"
+    };
+  }
+}

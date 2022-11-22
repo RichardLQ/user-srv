@@ -1,7 +1,5 @@
 syntax = "proto3";
-
 option go_package = "./stub";
-import "google/api/annotations.proto";
 package stub;
 
 message GetCollectListReq{
@@ -19,14 +17,4 @@ message CollectList {
   int32 id = 1;
   string openid = 2;
   string address = 3;
-}
-
-//收藏服务
-service CollectService {
-  rpc GetCollectList (GetCollectListReq) returns (GetCollectListRsp){
-    option (google.api.http) = { //获取用户所有的列表信息
-      post: "/collect/list",
-      body: "*"
-    };
-  }
 }
