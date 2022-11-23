@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/RichardLQ/user-srv/client"
 	"github.com/RichardLQ/user-srv/refer"
+	"time"
 )
 
 
@@ -46,6 +47,26 @@ func (u *Users) DelUserById() error {
 	}
 	return nil
 }
+
+//UpdateUser 更新用户
+func (u *Users) UpdateUser() error {
+	var err error
+	u.Updatetime = time.Now().Format(refer.LayOut_Time)
+	if u.Id == 0 {
+		u.Createtime = time.Now().Format(refer.LayOut_Time)
+		err = client.Global.Mini.Table(refer.Table_Users).Save(u).Error
+		if err !=nil {
+			return err
+		}
+		return nil
+	}
+	err = client.Global.Mini.Table(refer.Table_Users).Where("id = ?",u.Id).Updates(u).Error
+	if err !=nil {
+		return err
+	}
+	return nil
+}
+
 
 
 

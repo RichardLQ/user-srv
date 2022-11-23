@@ -43,10 +43,6 @@ func (this *userServiceServer) UpdateCollect(ctx context.Context, req *UpdateCol
 		Code: 200,
 		Msg: "更新成功！",
 	}
-	if req.Id == 0 {
-		rsp.Code = refer.Params_err
-		rsp.Msg = "参数缺失"
-	}
 	c :=collect.Collect{
 		Id: req.Id,
 		Collects: req.Collects,

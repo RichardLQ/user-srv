@@ -46,5 +46,21 @@ message DelUserInfoRsp {
   string data = 3;
 };
 
+message UpdateUserInfoReq {
+  int32 id = 1;
+  string openid = 2;
+  int32 gender = 3;
+  string username = 4;
+  string password = 5;
+  string address = 6;
+  string nickname = 7;
+  string desc = 8;
+};
+
+message UpdateUserInfoRsp {
+  int32 code = 1;
+  string msg = 2;
+};
+
 
 

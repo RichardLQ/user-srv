@@ -85,5 +85,31 @@ func (this *userServiceServer) DelUserInfo(ctx context.Context, req *DelUserInfo
 		return &rsp,err
 	}
 	rsp.Msg = "请求成功！"
-	return &rsp,err
+	return &rsp,nil
+}
+
+//UpdateUserInfo 更新用户信息
+func (this *userServiceServer) UpdateUserInfo(ctx context.Context, req *UpdateUserInfoReq) (*UpdateUserInfoRsp, error) {
+	rsp := UpdateUserInfoRsp{
+		Code: 200,
+		Msg:  "请求失败！",
+	}
+	user := &user.Users{
+		Id: req.Id,
+		Openid: req.Openid,
+		Gender: req.Gender,
+		Username: req.Username,
+		Password: req.Password,
+		Address: req.Address,
+		Nickname: req.Nickname,
+		Desc: req.Desc,
+	}
+	err := user.UpdateUser()
+	if err != nil {
+		rsp.Msg = err.Error()
+		rsp.Code = refer.Update_User_Err
+		return &rsp,err
+	}
+	rsp.Msg = "更新成功！"
+	return &rsp,nil
 }

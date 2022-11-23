@@ -24,6 +24,12 @@ service UserService {
       delete: "/user/delInfo/{user_id}"
     };
   }
+  rpc UpdateUserInfo (UpdateUserInfoReq) returns (UpdateUserInfoRsp){
+    option (google.api.http) = {//删除用户信息
+      put: "/user/updateInfo",
+      body: "*"
+    };
+  }
   //收藏服务
   rpc GetCollectList (GetCollectListReq) returns (GetCollectListRsp){
     option (google.api.http) = { //获取收藏所有的列表信息
