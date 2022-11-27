@@ -10,9 +10,7 @@ type Users struct {
 	Address    string `json:"address"`
 	Nickname   string `json:"nickname"`
 	Desc       string `json:"desc"`
-	Logoutime string `json:"logoutime"`
+	Logoutime  string `json:"logoutime"`
 	Updatetime string `json:"updatetime"`
 	Createtime string `json:"createtime"`
 }
-
-

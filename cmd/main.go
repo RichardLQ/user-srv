@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"strings"
 )
+
 var RpcSrv *grpc.Server
 
 func main() {
@@ -24,26 +25,29 @@ func main() {
 	startHttp()
 }
 
-func startRpc(){
+func startRpc() {
 	//启动rpc服务
 	RpcSrv := grpc.NewServer()
 	stub.RegisterUserServiceServer(RpcSrv, stub.UserService)
-	lis, _ := net.Listen("tcp", ":8081")
+	lis, _ := net.Listen("tcp", client.Global.UserServiceConf.RpcIp+":"+
+		client.Global.UserServiceConf.RpcPort)
 	RpcSrv.Serve(lis)
 }
-func startHttp()  {
+func startHttp() {
 	//启动http服务
 	gwmux := runtime.NewServeMux()
 	opt := []grpc.DialOption{grpc.WithInsecure()}
 	err := stub.RegisterUserServiceHandlerFromEndpoint(context.Background(),
-		gwmux, "localhost:8081", opt)
+		gwmux, client.Global.UserServiceConf.RpcIp+":"+
+			client.Global.UserServiceConf.RpcPort, opt)
 	if err != nil {
 		log.Fatal(fmt.Errorf("启动rpc失败:%+v", err))
 	}
 	httpServer := &http.Server{
-		Addr:    ":8080",
+		Addr: client.Global.UserServiceConf.HttpIp+":"+
+			client.Global.UserServiceConf.HttpPort,
 		//Handler: gwmux,
-		Handler:grpcHandlerFunc(RpcSrv, gwmux),
+		Handler: grpcHandlerFunc(RpcSrv, gwmux),
 	}
 	httpServer.ListenAndServe()
 }
@@ -53,10 +57,10 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 			grpcServer.ServeHTTP(w, r)
 		} else {
-			if isNotTokenVerify(r.URL.Path){
-				a :=auth.MyClaims{Token: r.Header.Get("token")}
-				_,err:= a.Decryption()
-				if err!= nil {
+			if isNotTokenVerify(r.URL.Path) {
+				a := auth.MyClaims{Token: r.Header.Get("token")}
+				_, err := a.Decryption()
+				if err != nil {
 					w.Write([]byte(err.Error()))
 					return
 				}
@@ -70,14 +74,13 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 func isNotTokenVerify(url string) bool {
 	flag := true
 	list := map[string]bool{
-		"/user/login":false,
+		"/user/login": false,
 	}
-	if _,ok := list[url];ok {
+	if _, ok := list[url]; ok {
 		flag = list[url]
 	}
 	return flag
 }
-
 
 func allowCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

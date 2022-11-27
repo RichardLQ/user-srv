@@ -7,10 +7,10 @@ import (
 )
 
 //FindCollectList 查询收藏列表
-func (c *Collect) FindCollectList() (*[]CollectList ,error) {
+func (c *Collect) FindCollectList() (*[]CollectList, error) {
 	list := &[]CollectList{}
-	if c.Id == 0 && c.Openid == ""{
-		return &[]CollectList{},fmt.Errorf("查询地址不可以为空")
+	if c.Id == 0 && c.Openid == "" {
+		return &[]CollectList{}, fmt.Errorf("查询地址不可以为空")
 	}
 	sql := client.Global.Mini.Table(refer.Table_Collects)
 	if c.Id != 0 {
@@ -22,11 +22,11 @@ func (c *Collect) FindCollectList() (*[]CollectList ,error) {
 	if c.Openid != "" {
 		sql = sql.Where("openid = ?", c.Openid)
 	}
-	err:=sql.Find(list).Error
-	if err !=nil {
-		return list,err
+	err := sql.Find(list).Error
+	if err != nil {
+		return list, err
 	}
-	return list,nil
+	return list, nil
 }
 
 //UpdateCollect 更新点赞
@@ -34,8 +34,8 @@ func (c *Collect) UpdateCollect() error {
 	if c.Id == 0 {
 		return fmt.Errorf("查询地址不可以为空")
 	}
-	err:= client.Global.Mini.Table(refer.Table_Collects).
-		Where("id = ?",c.Id).Update("collects",c.Collects).Error
+	err := client.Global.Mini.Table(refer.Table_Collects).
+		Where("id = ?", c.Id).Update("collects", c.Collects).Error
 	if err != nil {
 		return err
 	}
